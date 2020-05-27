@@ -1,2 +1,5 @@
+#222.154.85.221
+#203.211.72.19
+
 RewriteEngine On
 RewriteRule ^(.*)$ public/$1
