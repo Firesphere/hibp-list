@@ -1,0 +1,42 @@
+<?php
+
+
+namespace Firesphere\HIBP\Tasks;
+
+
+use Firesphere\HIBP\Models\Address;
+use Firesphere\HIBP\Models\Breach;
+use Firesphere\HIBP\Models\Paste;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Dev\BuildTask;
+
+class ImportListTask extends BuildTask
+{
+
+    /**
+     * @param HTTPRequest $request
+     */
+    public function run($request)
+    {
+        $data = file_get_contents(Director::baseFolder() . '/data.json');
+
+        $decoded = json_decode($data, 1);
+
+        foreach ($decoded['BreachSearchResults'] as $result) {
+            $address = Address::findOrCreate($result['Alias']);
+            foreach ($result['Breaches'] as $breach) {
+                $breachItem = Breach::findOrCreate($breach);
+                $address->Breaches()->add($breachItem);
+            }
+        }
+        foreach ($decoded['PasteSearchResults'] as $result) {
+            $address = Address::findOrCreate($result['Alias']);
+            foreach ($result['Pastes'] as $paste) {
+                $paste = Paste::findOrCreate($paste);
+                $address->Pastes()->add($paste);
+            }
+
+        }
+    }
+}
