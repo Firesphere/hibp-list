@@ -35,4 +35,10 @@ class Employee extends DataObject
         'Email',
         'Location'
     ];
+
+    public function canView($member = null)
+    {
+        return true;
+    }
+
 }

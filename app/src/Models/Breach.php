@@ -63,4 +63,15 @@ class Breach extends DataObject
     {
         return false;
     }
+
+    public function canCreate($member = null, $context = array())
+    {
+        return false;
+    }
+
+    public function canView($member = null)
+    {
+        return true;
+    }
+
 }

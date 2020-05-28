@@ -76,4 +76,14 @@ class Address extends DataObject
         return $existing;
     }
 
+    public function canCreate($member = null, $context = array())
+    {
+        return false;
+    }
+
+    public function canView($member = null)
+    {
+        return true;
+    }
+
 }
