@@ -24,14 +24,14 @@ class ImportListTask extends BuildTask
         $decoded = json_decode($data, 1);
 
         foreach ($decoded['BreachSearchResults'] as $result) {
-            $address = Address::findOrCreate($result['Alias']);
+            $address = Address::findOrCreate($result['Alias'], $result['DomainName']);
             foreach ($result['Breaches'] as $breach) {
                 $breachItem = Breach::findOrCreate($breach);
                 $address->Breaches()->add($breachItem);
             }
         }
         foreach ($decoded['PasteSearchResults'] as $result) {
-            $address = Address::findOrCreate($result['Alias']);
+            $address = Address::findOrCreate($result['Alias'], $result['DomainName']);
             foreach ($result['Pastes'] as $paste) {
                 $paste = Paste::findOrCreate($paste);
                 $address->Pastes()->add($paste);

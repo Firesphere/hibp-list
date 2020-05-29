@@ -36,6 +36,11 @@ class Paste extends DataObject
         'Title',
         'Date',
         'PasteId',
+        'Addresses.Count'
+    ];
+
+    private static $field_labels = [
+        'Addresses.Count' => 'ISP Addresses found in breach'
     ];
 
     public static function findOrCreate($breachData)
@@ -70,6 +75,11 @@ class Paste extends DataObject
     public function canView($member = null)
     {
         return true;
+    }
+
+    public function canDelete($member = null)
+    {
+        return false;
     }
 
 }

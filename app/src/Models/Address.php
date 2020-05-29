@@ -4,6 +4,7 @@
 namespace Firesphere\HIBP\Models;
 
 
+use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 
@@ -39,10 +40,33 @@ class Address extends DataObject
         'Name',
         'Extended',
         'Employee.Email',
-        'Employee.Name'
+        'Employee.Name',
+        'Breaches.Count',
+        'Pastes.Count'
     ];
 
-    public static function findOrCreate($alias)
+    private static $field_labels = [
+        'Extended'       => 'Mail extension (x+y@example.com)',
+        'Employee.Email' => 'Employee email',
+        'Employee.Name'  => 'Employee name',
+        'Breaches.Count' => 'Amount of breaches for this email',
+        'Pastes.Count'   => 'Amount of pastes for this email'
+    ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName(['EmployeeID']);
+        $fields->addFieldToTab('Root.Main',
+            ReadonlyField::create('EmptyField', 'Employee',
+                $this->Employee()->Name . ' (' . $this->Employee()->Email . ')')
+        );
+
+        return $fields;
+    }
+
+    public static function findOrCreate($alias, $domain)
     {
         $email = $alias;
         $extended = null;
@@ -60,10 +84,10 @@ class Address extends DataObject
             $existing->write();
 
 
-            $employee = Employee::get()->filter(['Email' => $email . '@catalyst.net.nz'])->first();
+            $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
 
             if (!$employee) {
-                $employee = Employee::create(['Email' => $email . '@catalyst.net.nz']);
+                $employee = Employee::create(['Email' => $email . '@' . $domain]);
                 $id = $employee->write();
             } else {
                 $id = $employee->ID;
@@ -81,9 +105,18 @@ class Address extends DataObject
         return false;
     }
 
+    public function canEdit($member = null)
+    {
+        return false;
+    }
+
     public function canView($member = null)
     {
         return true;
     }
 
+    public function canDelete($member = null)
+    {
+        return false;
+    }
 }

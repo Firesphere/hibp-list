@@ -4,6 +4,7 @@
 namespace Firesphere\HIBP\Models;
 
 
+use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 
@@ -24,6 +25,7 @@ class Employee extends DataObject
         'Name'     => 'Varchar(255)',
         'Email'    => 'Varchar(255)',
         'Location' => 'Varchar(255)',
+        'Active'   => 'Boolean(true)'
     ];
 
     private static $has_many = [
@@ -36,9 +38,38 @@ class Employee extends DataObject
         'Location'
     ];
 
+    private static $field_labels = [
+        'Location' => 'Location within employer premises',
+        'Active'   => 'Current employee'
+    ];
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->dataFieldByName('Addresses')->getConfig()->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
+
+        return $fields;
+    }
+
+    public function canEdit($member = null)
+    {
+        return true;
+    }
+
+    public function canCreate($member = null, $context = array())
+    {
+        return false;
+    }
+
     public function canView($member = null)
     {
         return true;
+    }
+
+    public function canDelete($member = null)
+    {
+        return false;
     }
 
 }
