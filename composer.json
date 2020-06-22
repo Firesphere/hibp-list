@@ -4,26 +4,14 @@
         "php": ">=7.1.0",
         "ext-sodium": "*",
         "silverstripe/recipe-plugin": "^1.2",
-        "silverstripe/recipe-cms": "^4.5",
-        "silverstripe/login-forms": "^4.1",
+        "silverstripe/config": "1.0.x-dev",
+        "silverstripe/framework": "4.x-dev",
         "silverstripe/mfa": "^4.0",
         "silverstripe/totp-authenticator": "^4.0",
         "silverstripe/webauthn-authenticator": "^4.0"
     },
-    "extra": {
-        "resources-dir": "_resources",
-        "project-files-installed": [
-            "app/.htaccess",
-            "app/_config.php",
-            "app/_config/mysite.yml",
-            "app/src/Page.php",
-            "app/src/PageController.php"
-        ],
-        "public-files-installed": [
-            ".htaccess",
-            "index.php",
-            "web.config"
-        ]
+    "require-dev": {
+        "silverleague/ideannotator": "^3"
     },
     "config": {
         "process-timeout": 600

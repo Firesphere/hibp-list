@@ -6,6 +6,12 @@ namespace Firesphere\HIBP\Models;
 
 use SilverStripe\ORM\DataObject;
 
+/**
+ * Class \Firesphere\HIBP\Models\DataType
+ *
+ * @property string $Title
+ * @method ManyManyList|Breach[] Breaches()
+ */
 class DataType extends DataObject
 {
 

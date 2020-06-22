@@ -15,7 +15,8 @@ use SilverStripe\ORM\ManyManyList;
  * @property string $BreachDate
  * @property string $Domain
  * @property string $Description
- * @property string $Data
+ * @property boolean $IsSensitive
+ * @method ManyManyList|DataType[] Types()
  * @method ManyManyList|Address[] Addresses()
  */
 class Breach extends DataObject
@@ -33,6 +34,7 @@ class Breach extends DataObject
         'BreachDate'  => 'Date',
         'Domain'      => 'Varchar(255)',
         'Description' => 'HTMLText',
+        'IsSensitive' => 'Boolean'
     ];
 
     private static $many_many = [
@@ -49,12 +51,14 @@ class Breach extends DataObject
         'BreachDate',
         'Domain',
         'Addresses.Count',
-        'Types.Count'
+        'Types.Count',
+        'IsSensitive.Nice'
     ];
 
     private static $field_labels = [
-        'Addresses.Count' => 'ISP Addresses in breach',
-        'Types.Count'     => 'Datatypes breached'
+        'Addresses.Count'  => 'ISP Addresses in breach',
+        'Types.Count'      => 'Datatypes breached',
+        'IsSensitive.Nice' => 'Sensitive'
     ];
 
     public static function findOrCreate($breachData)

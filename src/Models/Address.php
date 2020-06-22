@@ -53,6 +53,45 @@ class Address extends DataObject
         'Pastes.Count'   => 'Amount of pastes for this email'
     ];
 
+    private static $indexes = [
+        'Name'     => true,
+        'Extended' => true
+    ];
+
+    public static function findOrCreate($alias, $domain)
+    {
+        $email = $alias;
+        $extended = null;
+        if (strpos($alias, '+') !== false) {
+            list($email, $extended) = explode('+', $alias);
+        }
+        $address = static::get()->filter(['Name' => $email, 'Extended' => $extended])->first();
+
+        if (!$address) {
+            $address = static::create([
+                'Name'     => $email,
+                'Extended' => $extended
+            ]);
+
+            $address->write();
+
+
+            $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
+
+            if (!$employee) {
+                $employee = Employee::create(['Email' => $email . '@' . $domain]);
+                $id = $employee->write();
+            } else {
+                $id = $employee->ID;
+            }
+            $address->EmployeeID = $id;
+
+            $address->write();
+        }
+
+        return $address;
+    }
+
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -64,40 +103,6 @@ class Address extends DataObject
         );
 
         return $fields;
-    }
-
-    public static function findOrCreate($alias, $domain)
-    {
-        $email = $alias;
-        $extended = null;
-        if (strpos($alias, '+') !== false) {
-            list($email, $extended) = explode('+', $alias);
-        }
-        $existing = static::get()->filter(['Name' => $email, 'Extended' => $extended])->first();
-
-        if (!$existing) {
-            $existing = static::create([
-                'Name'     => $alias,
-                'Extended' => $extended
-            ]);
-
-            $existing->write();
-
-
-            $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
-
-            if (!$employee) {
-                $employee = Employee::create(['Email' => $email . '@' . $domain]);
-                $id = $employee->write();
-            } else {
-                $id = $employee->ID;
-            }
-            $existing->EmployeeID = $id;
-
-            $existing->write();
-        }
-
-        return $existing;
     }
 
     public function canCreate($member = null, $context = array())

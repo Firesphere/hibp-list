@@ -14,6 +14,7 @@ use SilverStripe\ORM\DataObject;
  * @property string $Name
  * @property string $Email
  * @property string $Location
+ * @property boolean $Active
  * @method DataList|Address[] Addresses()
  */
 class Employee extends DataObject
