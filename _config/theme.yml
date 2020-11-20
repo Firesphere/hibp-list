@@ -1,0 +1,15 @@
+---
+Name: hibptheme
+---
+SilverStripe\View\SSViewer:
+  themes:
+    - 'hibp'
+    - '$default'
+---
+Before:
+  - '#login-forms'
+---
+SilverStripe\LoginForms\EnablerExtension:
+  login_themes:
+    - 'hibp'
+    - '$default'

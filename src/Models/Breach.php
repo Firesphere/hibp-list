@@ -73,8 +73,7 @@ class Breach extends DataObject
             );
 
             $existing->write();
-
-            $existing->new = true;
+            $existing->New = true;
         }
         foreach ($breachData['DataClasses'] as $data) {
             $type = DataType::get()->filter(['Title' => $data])->first();

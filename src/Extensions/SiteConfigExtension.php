@@ -8,6 +8,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\SiteConfig\SiteConfig;
 
 /**
  * Class \Firesphere\HIBP\Extensions\SiteConfigExtension
@@ -16,6 +17,7 @@ use SilverStripe\ORM\DataExtension;
  * @property boolean $NotifyBreachedAccounts
  * @property string $NotificationFrom
  * @property string $NotificationReplyTo
+ * @property string $NotificationSubject
  * @property string $NotificationContent
  */
 class SiteConfigExtension extends DataExtension
@@ -24,6 +26,7 @@ class SiteConfigExtension extends DataExtension
         'NotifyBreachedAccounts' => 'Boolean(false)',
         'NotificationFrom'       => 'Varchar(255)',
         'NotificationReplyTo'    => 'Varchar(255)',
+        'NotificationSubject'    => 'Varchar(255)',
         'NotificationContent'    => 'HTMLText',
     ];
 
@@ -33,13 +36,14 @@ class SiteConfigExtension extends DataExtension
             CheckboxField::create('NotifyBreachedAccounts'),
             TextField::create('NotificationFrom'),
             TextField::create('NotificationReplyTo'),
+            TextField::create('NotificationSubject'),
             $content = HTMLEditorField::create('NotificationContent')
         ]);
 
         $content->setDescription('Available variables:<br />
          - $Name for the employee name<br />
          - $Email for the employee email address<br />
-         - $Breaches for listing out the breaches');
+         - $Breaches.RAW for listing out the breaches');
 
         return $fields;
     }

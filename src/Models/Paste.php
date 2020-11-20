@@ -57,7 +57,7 @@ class Paste extends DataObject
             $existing->PasteId = $pasteID;
 
             $existing->write();
-            $existing->new = true;
+            $existing->New = true;
         }
 
         return $existing;

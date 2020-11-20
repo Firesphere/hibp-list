@@ -59,8 +59,6 @@ class Address extends DataObject
 
     private static $default_sort = 'Name ASC';
 
-    public $new = false;
-
     public static function findOrCreate($alias, $domain)
     {
         $email = $alias;
@@ -82,7 +80,10 @@ class Address extends DataObject
             $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
 
             if (!$employee) {
-                $employee = Employee::create(['Email' => $email . '@' . $domain]);
+                $employee = Employee::create([
+                    'Email' => $email . '@' . $domain,
+                    'Name'  => ucfirst($email)
+                ]);
                 $id = $employee->write();
             } else {
                 $id = $employee->ID;
@@ -90,7 +91,6 @@ class Address extends DataObject
             $address->EmployeeID = $id;
 
             $address->write();
-            $address->new = true;
         }
 
         return $address;
