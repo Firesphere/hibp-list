@@ -29,7 +29,7 @@ class BreachNotification
             $mail->send();
             // In dev mode, we don't want to send hundreds and hundreds of emails
             if (Director::isDev()) {
-                exit;
+                continue;
             }
         }
     }

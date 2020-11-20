@@ -43,7 +43,7 @@ class SiteConfigExtension extends DataExtension
         $content->setDescription('Available variables:<br />
          - $Name for the employee name<br />
          - $Email for the employee email address<br />
-         - $Breaches.RAW for listing out the breaches');
+         - $Breaches.RAW for listing out the breaches (Note, the .RAW part is required)');
 
         return $fields;
     }

@@ -20,6 +20,8 @@ use SilverStripe\View\ArrayData;
 class ImportListTask extends BuildTask
 {
     private static $segment = 'ImportHIBP';
+    protected $description = 'Import all breaches from JSON file';
+    protected $title = 'Import HIBP data';
     protected $breachCount = 0;
     protected $pasteCount = 0;
     protected $breachMailCount = 0;
@@ -49,6 +51,7 @@ class ImportListTask extends BuildTask
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
         if ($config->NotifyBreachedAccounts) {
+            // Filtering to get the latest made in the last hour. It's not ideal, but it works~ish
             $filter = ['Created:PartialMatch' => date('Y-m-d H')];
             /** @var DataList|Breach[] $recentBreaches */
             $recentBreaches = Breach::get()->filter($filter);
@@ -90,10 +93,6 @@ class ImportListTask extends BuildTask
         /** @var Breach|Paste $item */
         foreach ($results[$name] as $item) {
             $item = $object::findOrCreate($item);
-            if ($item->New) {
-                $thisType = $name . 'IDs';
-                $this->$thisType[] = $item->ID;
-            }
             $address->$name()->add($item);
         }
 

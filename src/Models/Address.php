@@ -76,7 +76,6 @@ class Address extends DataObject
 
             $address->write();
 
-
             $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
 
             if (!$employee) {
