@@ -3,7 +3,6 @@
 
 namespace Firesphere\HIBP\Models;
 
-
 use SilverStripe\Forms\ReadonlyField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
@@ -58,6 +57,10 @@ class Address extends DataObject
         'Extended' => true
     ];
 
+    private static $default_sort = 'Name ASC';
+
+    public $new = false;
+
     public static function findOrCreate($alias, $domain)
     {
         $email = $alias;
@@ -87,6 +90,7 @@ class Address extends DataObject
             $address->EmployeeID = $id;
 
             $address->write();
+            $address->new = true;
         }
 
         return $address;
@@ -97,9 +101,13 @@ class Address extends DataObject
         $fields = parent::getCMSFields();
 
         $fields->removeByName(['EmployeeID']);
-        $fields->addFieldToTab('Root.Main',
-            ReadonlyField::create('EmptyField', 'Employee',
-                $this->Employee()->Name . ' (' . $this->Employee()->Email . ')')
+        $fields->addFieldToTab(
+            'Root.Main',
+            ReadonlyField::create(
+                'EmptyField',
+                'Employee',
+                $this->Employee()->Name . ' (' . $this->Employee()->Email . ')'
+            )
         );
 
         return $fields;

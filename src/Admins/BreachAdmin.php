@@ -3,7 +3,6 @@
 
 namespace Firesphere\HIBP\Admins;
 
-
 use Firesphere\HIBP\Models\Address;
 use Firesphere\HIBP\Models\Breach;
 use Firesphere\HIBP\Models\DataType;
@@ -17,7 +16,6 @@ use SilverStripe\Admin\ModelAdmin;
  */
 class BreachAdmin extends ModelAdmin
 {
-
     private static $managed_models = [
         Breach::class,
         Paste::class,

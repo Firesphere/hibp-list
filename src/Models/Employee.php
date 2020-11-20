@@ -3,7 +3,6 @@
 
 namespace Firesphere\HIBP\Models;
 
-
 use SilverStripe\Forms\GridField\GridFieldAddExistingAutocompleter;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
@@ -19,7 +18,6 @@ use SilverStripe\ORM\DataObject;
  */
 class Employee extends DataObject
 {
-
     private static $table_name = 'Employee';
 
     private static $db = [
@@ -72,5 +70,4 @@ class Employee extends DataObject
     {
         return false;
     }
-
 }

@@ -3,7 +3,6 @@
 
 namespace Firesphere\HIBP\Models;
 
-
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 
@@ -21,7 +20,6 @@ use SilverStripe\ORM\ManyManyList;
  */
 class Breach extends DataObject
 {
-
     private static $table_name = 'Breach';
 
     private static $singular_name = 'Breach';
@@ -61,6 +59,10 @@ class Breach extends DataObject
         'IsSensitive.Nice' => 'Sensitive'
     ];
 
+    private static $default_sort = 'Title ASC';
+
+    public $new = false;
+
     public static function findOrCreate($breachData)
     {
         $existing = static::get()->filter(['Name' => $breachData['Name']])->first();
@@ -71,6 +73,8 @@ class Breach extends DataObject
             );
 
             $existing->write();
+
+            $existing->new = true;
         }
         foreach ($breachData['DataClasses'] as $data) {
             $type = DataType::get()->filter(['Title' => $data])->first();
@@ -103,5 +107,4 @@ class Breach extends DataObject
     {
         return false;
     }
-
 }

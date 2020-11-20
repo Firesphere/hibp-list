@@ -3,8 +3,8 @@
 
 namespace Firesphere\HIBP\Models;
 
-
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\ManyManyList;
 
 /**
  * Class \Firesphere\HIBP\Models\DataType
@@ -14,7 +14,6 @@ use SilverStripe\ORM\DataObject;
  */
 class DataType extends DataObject
 {
-
     private static $table_name = 'DataType';
 
     private static $db = [
@@ -53,5 +52,4 @@ class DataType extends DataObject
     {
         return false;
     }
-
 }

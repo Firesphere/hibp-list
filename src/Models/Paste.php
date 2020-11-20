@@ -3,7 +3,6 @@
 
 namespace Firesphere\HIBP\Models;
 
-
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 
@@ -18,7 +17,6 @@ use SilverStripe\ORM\ManyManyList;
  */
 class Paste extends DataObject
 {
-
     private static $table_name = 'Paste';
 
     private static $db = [
@@ -43,6 +41,8 @@ class Paste extends DataObject
         'Addresses.Count' => 'ISP Addresses found in breach'
     ];
 
+    public $new = false;
+
     public static function findOrCreate($breachData)
     {
         $existing = static::get()->filter(['PasteId' => $breachData['Id']])->first();
@@ -57,6 +57,7 @@ class Paste extends DataObject
             $existing->PasteId = $pasteID;
 
             $existing->write();
+            $existing->new = true;
         }
 
         return $existing;
@@ -81,5 +82,4 @@ class Paste extends DataObject
     {
         return false;
     }
-
 }
