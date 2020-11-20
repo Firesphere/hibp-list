@@ -49,12 +49,13 @@ class ImportListTask extends BuildTask
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
         if ($config->NotifyBreachedAccounts) {
+            $filter = ['Created:PartialMatch' => date('Y-m-d H')];
             /** @var DataList|Breach[] $recentBreaches */
-            $recentBreaches = Breach::get()->filter(['Created:PartialMatch' => date('Y-m-d H')]);
+            $recentBreaches = Breach::get()->filter($filter);
             $this->getAddressesToSend($recentBreaches);
-            /** @var DataList|Paste[] $recentBreaches */
-            $recentBreaches = Paste::get()->filter(['Created:PartialMatch' => date('Y-m-d H')]);
-            $this->getAddressesToSend($recentBreaches);
+            /** @var DataList|Paste[] $recentPastes */
+            $recentPastes = Paste::get()->filter($filter);
+            $this->getAddressesToSend($recentPastes);
             new BreachNotification($this->sendMails);
         }
 
@@ -136,11 +137,9 @@ class ImportListTask extends BuildTask
      */
     protected function getAddressesToSend(DataList $recentBreaches): void
     {
-        if ($recentBreaches->count()) {
-            foreach ($recentBreaches as $recentBreach) {
-                foreach ($recentBreach->Addresses() as $address) {
-                    $this->updateSendEmails($address, $recentBreach);
-                }
+        foreach ($recentBreaches as $recentBreach) {
+            foreach ($recentBreach->Addresses() as $address) {
+                $this->updateSendEmails($address, $recentBreach);
             }
         }
     }
