@@ -13,7 +13,7 @@ This module has no frontend.
 
 ## Usage
 
-Download the JSON files from Have I Been Pwned and put them in the
+[Download the JSON files from Have I Been Pwned](https://haveibeenpwned.com/DomainSearch) and put them in the
 folder named `datafiles` in the document root of your website.
 
 Run the task `/dev/tasks/ImportHIBP`
