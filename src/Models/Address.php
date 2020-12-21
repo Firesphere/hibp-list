@@ -26,6 +26,15 @@ class Address extends DataObject
         'Extended' => 'Varchar(255)',
     ];
 
+    private static $summary_fields = [
+        'Employee.Name',
+        'Employee.Surname',
+        'Extended',
+        'Employee.Email',
+        'Breaches.Count',
+        'Pastes.Count'
+    ];
+
     private static $has_one = [
         'Employee' => Employee::class
     ];
@@ -35,21 +44,13 @@ class Address extends DataObject
         'Pastes'   => Paste::class
     ];
 
-    private static $summary_fields = [
-        'Name',
-        'Extended',
-        'Employee.Email',
-        'Employee.Name',
-        'Breaches.Count',
-        'Pastes.Count'
-    ];
-
     private static $field_labels = [
-        'Extended'       => 'Mail extension (x+y@example.com)',
-        'Employee.Email' => 'Employee email',
-        'Employee.Name'  => 'Employee name',
-        'Breaches.Count' => 'Amount of breaches for this email',
-        'Pastes.Count'   => 'Amount of pastes for this email'
+        'Employee.Surname' => 'Surname',
+        'Extended'         => 'Mail extension (x+y@example.com)',
+        'Employee.Email'   => 'Email',
+        'Employee.Name'    => 'First name',
+        'Breaches.Count'   => 'Amount of breaches',
+        'Pastes.Count'     => 'Amount of pastes'
     ];
 
     private static $indexes = [

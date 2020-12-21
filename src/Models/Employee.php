@@ -11,6 +11,7 @@ use SilverStripe\ORM\DataObject;
  * Class \Firesphere\HIBP\Models\Employee
  *
  * @property string $Name
+ * @property string $Surname
  * @property string $Email
  * @property string $Location
  * @property boolean $Active
@@ -22,6 +23,7 @@ class Employee extends DataObject
 
     private static $db = [
         'Name'     => 'Varchar(255)',
+        'Surname'  => 'Varchar(255)',
         'Email'    => 'Varchar(255)',
         'Location' => 'Varchar(255)',
         'Active'   => 'Boolean(true)'
@@ -33,14 +35,31 @@ class Employee extends DataObject
 
     private static $summary_fields = [
         'Name',
+        'Surname',
         'Email',
-        'Location'
+        'Location',
+        'Addresses.Breaches.Count',
+        'Active.Nice'
     ];
 
     private static $field_labels = [
-        'Location' => 'Location within employer premises',
-        'Active'   => 'Current employee'
+        'Addresses.Breaches.Count' => 'Times breached',
+        'Active.Nice'              => 'Current employee'
     ];
+
+    public static function findOrCreate($data)
+    {
+        /** @var static|Employee $existing */
+        $existing = self::get()->filter(['Email' => $data['Email']])->first();
+        if (!$existing) {
+            $empl = self::create($data);
+            $empl->Active = $data['Active'] === 'active';
+            $empl->write();
+        } else {
+            $data['Active'] = $data['Active'] === 'active';
+            $existing->update($data)->write();
+        }
+    }
 
     public function getCMSFields()
     {

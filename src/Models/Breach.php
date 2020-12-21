@@ -54,9 +54,15 @@ class Breach extends DataObject
     ];
 
     private static $field_labels = [
-        'Addresses.Count'  => 'ISP Addresses in breach',
+        'Addresses.Count'  => 'Addresses in breach',
         'Types.Count'      => 'Datatypes breached',
         'IsSensitive.Nice' => 'Sensitive'
+    ];
+
+    private static $indexes = [
+        'Title'  => true,
+        'Name'   => true,
+        'Domain' => true
     ];
 
     private static $default_sort = 'Title ASC';

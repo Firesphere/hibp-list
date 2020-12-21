@@ -22,10 +22,6 @@ class ImportListTask extends BuildTask
     private static $segment = 'ImportHIBP';
     protected $description = 'Import all breaches from JSON file';
     protected $title = 'Import HIBP data';
-    protected $breachCount = 0;
-    protected $pasteCount = 0;
-    protected $breachMailCount = 0;
-    protected $pasteMailCount = 0;
 
     /**
      * @var ArrayList
@@ -61,12 +57,6 @@ class ImportListTask extends BuildTask
             $this->getAddressesToSend($recentPastes);
             new BreachNotification($this->sendMails);
         }
-
-        $newLine = Director::is_cli() ? PHP_EOL : "<br />";
-        echo "New Emails in Breaches: $this->breachMailCount" . $newLine;
-        echo "New Breaches: $this->breachCount" . $newLine;
-        echo "New Emails in Pastes: $this->pasteMailCount" . $newLine;
-        echo "New Pastes: $this->pasteCount" . $newLine;
     }
 
     /**
@@ -86,7 +76,7 @@ class ImportListTask extends BuildTask
      * @param $results array of results
      * @param $address Address Address to add or fix
      * @param $name string Name of the method
-     * @param $object string Object to create
+     * @param $object string|Breach|Paste Object to create
      */
     protected function addItem($results, $address, $name, $object)
     {
@@ -95,7 +85,6 @@ class ImportListTask extends BuildTask
             $item = $object::findOrCreate($item);
             $address->$name()->add($item);
         }
-
     }
 
     /**
@@ -123,11 +112,11 @@ class ImportListTask extends BuildTask
                 [
                     'Email'    => $address->Employee()->Email,
                     'Name'     => $address->Employee()->Name,
-                    'Breaches' => sprintf('<li>%s</li>', $recentBreach->Title)
+                    'Breaches' => sprintf('<li>%s<br />%s</li>', $recentBreach->Title)
                 ]
             ));
         } else {
-            $existing->Breaches .= sprintf('<li>%s</li>', $recentBreach->Title);
+            $existing->Breaches .= sprintf('<li>%s<br />%s</li>', $recentBreach->Title, $recentBreach->Description);
         }
     }
 
