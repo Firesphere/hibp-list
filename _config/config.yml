@@ -1,0 +1,7 @@
+---
+Name: hibpmngmnt
+After: HaveIBeenPwnedConfig
+---
+Firesphere\HaveIBeenPwned\Services\HaveIBeenPwnedService:
+  allow_pwnd: false
+  save_pwnd: false

@@ -8,7 +8,8 @@
         "silverstripe/config": "1.0.x-dev",
         "silverstripe/mfa": "^4.0",
         "silverstripe/totp-authenticator": "^4.0",
-        "silverstripe/webauthn-authenticator": "^4.0"
+        "silverstripe/webauthn-authenticator": "^4.0",
+        "firesphere/haveibeenpwned": "^1"
     },
     "require-dev": {
         "silverleague/ideannotator": "^3"
