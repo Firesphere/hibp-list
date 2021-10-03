@@ -75,8 +75,6 @@ class Address extends DataObject
                 'Extended' => $extended
             ]);
 
-            $address->write();
-
             $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
 
             if (!$employee) {
@@ -84,11 +82,9 @@ class Address extends DataObject
                     'Email' => $email . '@' . $domain,
                     'Name'  => ucfirst($email)
                 ]);
-                $id = $employee->write();
-            } else {
-                $id = $employee->ID;
+                $employee->write();
             }
-            $address->EmployeeID = $id;
+            $address->EmployeeID = $employee->ID;
 
             $address->write();
         }

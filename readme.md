@@ -16,6 +16,8 @@ This module has no frontend.
 [Download the JSON files from Have I Been Pwned](https://haveibeenpwned.com/DomainSearch) and put them in the
 folder named `datafiles` in the document root of your website.
 
+It needs to be a json file, and need to be named as such. E.g. `mydomain.json`.
+
 Run the task `/dev/tasks/ImportHIBP`
 
 Then, log in to the backend system, and you can search and filter easily

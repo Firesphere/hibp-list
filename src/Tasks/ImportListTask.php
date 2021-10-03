@@ -9,8 +9,10 @@ use Firesphere\HIBP\Extensions\SiteConfigExtension;
 use Firesphere\HIBP\Models\Address;
 use Firesphere\HIBP\Models\Breach;
 use Firesphere\HIBP\Models\Paste;
+use Psr\Log\LoggerInterface;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
@@ -29,12 +31,24 @@ class ImportListTask extends BuildTask
     protected $sendMails;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->logger = Injector::inst()->get(LoggerInterface::class);
+    }
+
+    /**
      * @param HTTPRequest $request
      * @throws Exception
      */
     public function run($request)
     {
-        $this->sendMails = ArrayList::create();
+        $maxBreach = Breach::get()->max('ID') ?? 0;
+        $maxPaste = Paste::get()->max('ID') ?? 0;
         foreach (glob(Director::baseFolder() . '/datafiles/*.json') as $file) {
             $data = file_get_contents($file);
 
@@ -43,19 +57,18 @@ class ImportListTask extends BuildTask
             $this->findBreaches($decoded);
             $this->findPastes($decoded);
         }
+        // Filtering to get the latest made with an ID higher than the last known ID.
+        // Not ideal for loading an entire new set, but works for subsequent sets.
+        $breachCount = Breach::get()->filter(['ID:GreaterThan' => $maxBreach]);
+        $pasteCount = Paste::get()->filter(['ID:GreaterThan' => $maxPaste]);
+
+        $this->logger->info(sprintf('Found/created %s new Breaches', $breachCount->count()));
+        $this->logger->info(sprintf('Found/created %s new Pastes', $pasteCount->count()));
 
         /** @var SiteConfig|SiteConfigExtension $config */
         $config = SiteConfig::current_site_config();
         if ($config->NotifyBreachedAccounts) {
-            // Filtering to get the latest made in the last hour. It's not ideal, but it works~ish
-            $filter = ['Created:PartialMatch' => date('Y-m-d H')];
-            /** @var DataList|Breach[] $recentBreaches */
-            $recentBreaches = Breach::get()->filter($filter);
-            $this->getAddressesToSend($recentBreaches);
-            /** @var DataList|Paste[] $recentPastes */
-            $recentPastes = Paste::get()->filter($filter);
-            $this->getAddressesToSend($recentPastes);
-            new BreachNotification($this->sendMails);
+            $this->sendNotification($breachCount, $pasteCount);
         }
     }
 
@@ -106,13 +119,16 @@ class ImportListTask extends BuildTask
      */
     protected function updateSendEmails(Address $address, $recentBreach): void
     {
+        if (!$this->sendMails) {
+            $this->sendMails = ArrayList::create();
+        }
         $existing = $this->sendMails->find('Email', $address->Employee()->Email);
         if (!$existing) {
             $this->sendMails->push(ArrayData::create(
                 [
                     'Email'    => $address->Employee()->Email,
                     'Name'     => $address->Employee()->Name,
-                    'Breaches' => sprintf('<li>%s<br />%s</li>', $recentBreach->Title)
+                    'Breaches' => sprintf('<li>%s<br />%s</li>', $recentBreach->Title, $recentBreach->Description)
                 ]
             ));
         } else {
@@ -130,5 +146,13 @@ class ImportListTask extends BuildTask
                 $this->updateSendEmails($address, $recentBreach);
             }
         }
+    }
+
+    protected function sendNotification($breaches, $pastes): void
+    {
+        $this->getAddressesToSend($breaches);
+
+        $this->getAddressesToSend($pastes);
+        new BreachNotification($this->sendMails);
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "firesphere/hibp",
+    "name": "firesphere/hibpmngmnt",
     "require": {
         "php": ">=7.1.0",
         "ext-sodium": "*",
