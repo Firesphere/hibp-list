@@ -16,6 +16,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\ArrayData;
 
@@ -41,11 +42,16 @@ class ImportListTask extends BuildTask
         $this->logger = Injector::inst()->get(LoggerInterface::class);
     }
 
+    public function run($request)
+    {
+        $this->doImport($request);
+    }
+
     /**
      * @param HTTPRequest $request
      * @throws Exception
      */
-    public function run($request)
+    public function doImport($request)
     {
         $maxBreach = Breach::get()->max('ID') ?? 0;
         $maxPaste = Paste::get()->max('ID') ?? 0;
@@ -70,6 +76,8 @@ class ImportListTask extends BuildTask
         if ($config->NotifyBreachedAccounts) {
             $this->sendNotification($breachCount, $pasteCount);
         }
+        $config->LastImport = DBDatetime::now();
+        $config->write();
     }
 
     /**
