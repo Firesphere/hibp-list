@@ -11,6 +11,7 @@ use SilverStripe\ORM\ManyManyList;
  * Class \Firesphere\HIBP\Models\Address
  *
  * @property string $Name
+ * @property string $Domain
  * @property string $Extended
  * @property int $EmployeeID
  * @method Employee Employee()
@@ -23,6 +24,7 @@ class Address extends DataObject
 
     private static $db = [
         'Name'     => 'Varchar(255)',
+        'Domain'   => 'Varchar(255)',
         'Extended' => 'Varchar(255)',
     ];
 
@@ -67,20 +69,27 @@ class Address extends DataObject
         if (strpos($alias, '+') !== false) {
             list($email, $extended) = explode('+', $alias);
         }
-        $address = static::get()->filter(['Name' => $email, 'Extended' => $extended])->first();
+        $address = static::get()->filter([
+            'Name'     => $email,
+            'Domain'   => $domain,
+            'Extended' => $extended
+        ])->first();
 
         if (!$address) {
             $address = static::create([
                 'Name'     => $email,
-                'Extended' => $extended
+                'Extended' => $extended,
+                'Domain'   => $domain
             ]);
 
-            $employee = Employee::get()->filter(['Email' => $email . '@' . $domain])->first();
+            $employee = Employee::get()->filter([
+                'Email' => sprintf('%s@%s', $email, $domain)
+            ])->first();
 
             if (!$employee) {
                 $employee = Employee::create([
-                    'Email' => $email . '@' . $domain,
-                    'Name'  => ucfirst($email)
+                    'Email' => sprintf('%s@%s', $email, $domain),
+                    'Name'  => ucfirst($email) // This is a bit ugly, but it is something
                 ]);
                 $employee->write();
             }
@@ -107,11 +116,6 @@ class Address extends DataObject
         );
 
         return $fields;
-    }
-
-    public function canCreate($member = null, $context = array())
-    {
-        return false;
     }
 
     public function canEdit($member = null)

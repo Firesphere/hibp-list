@@ -3,9 +3,15 @@
 
 namespace Firesphere\HIBP\Extensions;
 
+use Firesphere\HIBP\Tasks\ImportListTask;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+use SilverStripe\Control\NullHTTPRequest;
 use SilverStripe\Forms\CheckboxField;
+use SilverStripe\Forms\DatetimeField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HTMLEditor\HTMLEditorField;
+use SilverStripe\Forms\TextareaField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -19,6 +25,7 @@ use SilverStripe\SiteConfig\SiteConfig;
  * @property string $NotificationReplyTo
  * @property string $NotificationSubject
  * @property string $NotificationContent
+ * @property string $LastImport
  */
 class SiteConfigExtension extends DataExtension
 {
@@ -28,11 +35,21 @@ class SiteConfigExtension extends DataExtension
         'NotificationReplyTo'    => 'Varchar(255)',
         'NotificationSubject'    => 'Varchar(255)',
         'NotificationContent'    => 'HTMLText',
+        'LastImport'             => 'DBDatetime'
     ];
+
+    protected $DataURL = null;
+    protected $DataSet = null;
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldsToTab('Root.HIBP', [
+        $fields->removeByName('LastImport');
+        $fields->addFieldsToTab('Root.HIBPImport', [
+            DatetimeField::create('LastImport', 'Last import date')->setReadonly(true)->setDisabled(true),
+            TextField::create('DataURL', 'Paste the url to download the JSON from'),
+            TextareaField::create('DataSet', 'Paste the JSON from HIBP to import'),
+        ]);
+        $fields->addFieldsToTab('Root.HIBPNotifications', [
             CheckboxField::create('NotifyBreachedAccounts'),
             TextField::create('NotificationFrom'),
             TextField::create('NotificationReplyTo'),
@@ -46,5 +63,22 @@ class SiteConfigExtension extends DataExtension
          - $Breaches.RAW for listing out the breaches and their description (Note, the .RAW part is required)');
 
         return $fields;
+    }
+
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+        $url = $this->owner->DataURL;
+        $set = $this->owner->DataSet;
+        if ($url || $set) {
+            $targetFile = sprintf('%s/datafiles/hibp-%s.json', Director::baseFolder(), date('Y-m-d'));
+            $content = $set;
+            if ($url) {
+                $content = file_get_contents($url);
+            }
+            file_put_contents($targetFile, $content);
+            (new ImportListTask())->doImport(new NullHTTPRequest());
+            unlink($targetFile);
+        }
     }
 }

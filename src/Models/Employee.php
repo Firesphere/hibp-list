@@ -52,13 +52,24 @@ class Employee extends DataObject
         /** @var static|Employee $existing */
         $existing = self::get()->filter(['Email' => $data['Email']])->first();
         if (!$existing) {
-            $empl = self::create($data);
-            $empl->Active = $data['Active'] === 'active';
-            $empl->write();
+            $existing = self::create($data);
         } else {
-            $data['Active'] = $data['Active'] === 'active';
-            $existing->update($data)->write();
+            $existing->update($data);
         }
+
+        $existing->write();
+
+        list($name, $domain) = explode('@', $data['Email']);
+        $addresses = $existing->Addresses()->filter(['Name' => $name, 'Domain' => $domain]);
+        if (!$addresses->count()) {
+            Address::create([
+                'Name'       => $name,
+                'Domain'     => $domain,
+                'EmployeeID' => $existing->ID
+            ])->write();
+        }
+
+        return $existing->ID;
     }
 
     public function getCMSFields()
@@ -68,6 +79,11 @@ class Employee extends DataObject
         $fields->dataFieldByName('Addresses')->getConfig()->removeComponentsByType(GridFieldAddExistingAutocompleter::class);
 
         return $fields;
+    }
+
+    public function getFullName()
+    {
+        return sprintf('%s %s', $this->Name, $this->Surname);
     }
 
     public function canEdit($member = null)
