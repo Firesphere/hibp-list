@@ -63,8 +63,8 @@ class Employee extends DataObject
         $addresses = $existing->Addresses()->filter(['Name' => $name, 'Domain' => $domain]);
         if (!$addresses->count()) {
             Address::create([
-                'Name' => $name,
-                'Domain' => $domain,
+                'Name'       => $name,
+                'Domain'     => $domain,
                 'EmployeeID' => $existing->ID
             ])->write();
         }

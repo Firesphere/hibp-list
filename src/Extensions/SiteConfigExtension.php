@@ -4,6 +4,7 @@
 namespace Firesphere\HIBP\Extensions;
 
 use Firesphere\HIBP\Tasks\ImportListTask;
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\NullHTTPRequest;
 use SilverStripe\Forms\CheckboxField;
@@ -67,11 +68,13 @@ class SiteConfigExtension extends DataExtension
     public function onBeforeWrite()
     {
         parent::onBeforeWrite();
-        if ($this->DataURL || $this->DataSet) {
+        $url = $this->owner->DataURL;
+        $set = $this->owner->DataSet;
+        if ($url || $set) {
             $targetFile = sprintf('%s/datafiles/hibp-%s.json', Director::baseFolder(), date('Y-m-d'));
-            $content = $this->DataSet;
-            if ($this->DataURL) {
-                $content = file_get_contents($this->DataURL);
+            $content = $set;
+            if ($url) {
+                $content = file_get_contents($url);
             }
             file_put_contents($targetFile, $content);
             (new ImportListTask())->doImport(new NullHTTPRequest());
