@@ -5,7 +5,7 @@
         "ext-sodium": "*",
         "silverstripe/recipe-plugin": "*",
         "silverstripe/framework": "^4",
-        "silverstripe/config": "1.0.x-dev",
+        "silverstripe/config": "^1",
         "silverstripe/mfa": "^4.0",
         "silverstripe/totp-authenticator": "^4.0",
         "silverstripe/webauthn-authenticator": "^4.0",
