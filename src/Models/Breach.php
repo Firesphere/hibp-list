@@ -3,6 +3,8 @@
 
 namespace Firesphere\HIBP\Models;
 
+use SilverStripe\Forms\HTMLReadonlyField;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ManyManyList;
 
@@ -69,8 +71,30 @@ class Breach extends DataObject
 
     public $new = false;
 
+    /**
+     * Update the fields to properly display the Description.
+     *
+     * @return \SilverStripe\Forms\FieldList
+     */
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $literal = HTMLReadonlyField::create('Description', 'Description', $this->Description);
+
+        $fields->replaceField('Description', $literal);
+
+        return $fields;
+    }
+
+    /**
+     * @param array $breachData
+     * @return Breach
+     * @throws \SilverStripe\ORM\ValidationException
+     */
     public static function findOrCreate($breachData)
     {
+        /** @var self $existing */
         $existing = static::get()->filter(['Name' => $breachData['Name']])->first();
 
         if (!$existing) {
